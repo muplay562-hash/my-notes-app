@@ -69,6 +69,7 @@
 </div>
 
 <div class="main">
+    <input id="titleInput" placeholder="Note Title" style="padding:8px; font-size:16px; margin-bottom:10px;">
     <textarea id="editor" placeholder="Select or create a note..."></textarea>
     <button onclick="deleteNote()">Delete Note</button>
 </div>
@@ -79,6 +80,7 @@
 
     const notesList = document.getElementById("notesList");
     const editor = document.getElementById("editor");
+    const titleInput = document.getElementById("titleInput");
 
     function saveNotes() {
         localStorage.setItem("notes", JSON.stringify(notes));
@@ -104,11 +106,13 @@
         currentNoteIndex = notes.length - 1;
         saveNotes();
         renderNotes();
+        titleInput.value = newNote.title;
         editor.value = "";
     }
 
     function selectNote(index) {
         currentNoteIndex = index;
+        titleInput.value = notes[index].title;
         editor.value = notes[index].content;
         renderNotes();
     }
@@ -117,22 +121,28 @@
         if (currentNoteIndex === null) return;
         notes.splice(currentNoteIndex, 1);
         currentNoteIndex = null;
+        titleInput.value = "";
         editor.value = "";
         saveNotes();
         renderNotes();
     }
 
-    editor.addEventListener("input", () => {
+    titleInput.addEventListener("input", () => {
         if (currentNoteIndex !== null) {
-            notes[currentNoteIndex].content = editor.value;
-            notes[currentNoteIndex].title = editor.value.split("\n")[0] || "Untitled Note";
+            notes[currentNoteIndex].title = titleInput.value;
             saveNotes();
             renderNotes();
         }
     });
 
+    editor.addEventListener("input", () => {
+        if (currentNoteIndex !== null) {
+            notes[currentNoteIndex].content = editor.value;
+            saveNotes();
+        }
+    });
+
     renderNotes();
 </script>
-
 </body>
 </html>
