@@ -295,8 +295,20 @@ editor.addEventListener("input", () => {
 });
 
 // ===== Initial Render =====
-renderFolders();
-renderNotes();
+async function loadData() {
+    const doc = await db.collection("notesApp").doc("mainData").get();
+
+    if (doc.exists) {
+        folders = doc.data().folders || [];
+    } else {
+        folders = [];
+    }
+
+    renderFolders();
+    renderNotes();
+}
+
+loadData();
 </script>
 </body>
 </html>
