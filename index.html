@@ -90,7 +90,33 @@ const firebaseConfig = {
   appId: "1:1058723242377:web:e5d1dbcbaa19dfd1f6c158"
 };
 
+<!-- Firebase App (core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
+// 🔥 Firebase Configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "notes-cloud-app-cdfa2.firebaseapp.com",
+  projectId: "notes-cloud-app-cdfa2",
+  storageBucket: "notes-cloud-app-cdfa2.firebasestorage.app",
+  messagingSenderId: "1058723242377",
+  appId: "1:1058723242377:web:e5d1dbcbaa19dfd1f6c158"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Initialize Firestore
+const db = firebase.firestore();
+
+// ==============================
+// YOUR EXISTING APP CODE BELOW
+// ==============================
+
 let folders = JSON.parse(localStorage.getItem("folders")) || [];
 let currentFolderIndex = null;
 let currentNoteIndex = null;
@@ -104,6 +130,8 @@ function saveData() {
     localStorage.setItem("folders", JSON.stringify(folders));
 }
 
+// (Keep the rest of your existing functions exactly as they are below this line)
+    
 // ===== Folder Functions =====
 function renderFolders() {
     foldersList.innerHTML = "";
