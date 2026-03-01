@@ -136,6 +136,31 @@ function renameFolder() {
     renderFolders();
 }
 
+function deleteFolder() {
+    if (currentFolderIndex === null) {
+        alert("Select a folder first!");
+        return;
+    }
+
+    const confirmDelete = confirm(
+        `Are you sure you want to delete "${folders[currentFolderIndex].name}" and all its notes?`
+    );
+
+    if (!confirmDelete) return;
+
+    folders.splice(currentFolderIndex, 1);
+
+    currentFolderIndex = null;
+    currentNoteIndex = null;
+
+    titleInput.value = "";
+    editor.value = "";
+
+    saveData();
+    renderFolders();
+    renderNotes();
+}
+
 // ===== Note Functions =====
 function renderNotes() {
     notesList.innerHTML = "";
