@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Web Notepad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            background: white;
+            width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .clear {
+            background-color: #f44336;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>My Simple Notepad</h1>
+    <textarea id="note" placeholder="Start typing your notes here..."></textarea>
+    <br>
+    <button class="save" onclick="saveNote()">Save</button>
+    <button class="clear" onclick="clearNote()">Clear</button>
+    <div class="status" id="status"></div>
+</div>
+
+<script>
+    const textarea = document.getElementById("note");
+    const status = document.getElementById("status");
+
+    // Load saved note when page opens
+    window.onload = function() {
+        const savedNote = localStorage.getItem("myNote");
+        if (savedNote) {
+            textarea.value = savedNote;
+        }
+    };
+
+    function saveNote() {
+        localStorage.setItem("myNote", textarea.value);
+        status.textContent = "Note saved successfully!";
+        setTimeout(() => status.textContent = "", 2000);
+    }
+
+    function clearNote() {
+        if (confirm("Are you sure you want to clear the note?")) {
+            textarea.value = "";
+            localStorage.removeItem("myNote");
+            status.textContent = "Note cleared.";
+            setTimeout(() => status.textContent = "", 2000);
+        }
+    }
+</script>
+
+</body>
+</html>
