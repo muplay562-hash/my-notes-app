@@ -162,6 +162,53 @@ function deleteFolder() {
     renderNotes();
 }
 
+function moveNote() {
+    if (currentFolderIndex === null || currentNoteIndex === null) {
+        alert("Select a note first!");
+        return;
+    }
+
+    if (folders.length < 2) {
+        alert("You need at least two folders to move notes.");
+        return;
+    }
+
+    // Show folder options
+    let folderNames = folders
+        .map((folder, index) => `${index}: ${folder.name}`)
+        .join("\n");
+
+    let targetIndex = prompt(
+        "Move to which folder?\n\n" + folderNames,
+        ""
+    );
+
+    targetIndex = Number(targetIndex);
+
+    if (
+        isNaN(targetIndex) ||
+        targetIndex < 0 ||
+        targetIndex >= folders.length ||
+        targetIndex === currentFolderIndex
+    ) {
+        alert("Invalid folder selection.");
+        return;
+    }
+
+    // Remove note from current folder
+    const noteToMove = folders[currentFolderIndex].notes.splice(currentNoteIndex, 1)[0];
+
+    // Add to new folder
+    folders[targetIndex].notes.push(noteToMove);
+
+    currentNoteIndex = null;
+    titleInput.value = "";
+    editor.value = "";
+
+    saveData();
+    renderNotes();
+}
+
 // ===== Note Functions =====
 function renderNotes() {
     notesList.innerHTML = "";
