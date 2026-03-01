@@ -123,6 +123,18 @@ function selectFolder(index) {
     renderNotes();
 }
 
+function renameFolder() {
+    if (currentFolderIndex === null) {
+        alert("Select a folder first!");
+        return;
+    }
+    const newName = prompt("Enter new folder name:", folders[currentFolderIndex].name);
+    if (!newName) return;
+    folders[currentFolderIndex].name = newName;
+    saveData();
+    renderFolders();
+}
+
 // ===== Note Functions =====
 function renderNotes() {
     notesList.innerHTML = "";
