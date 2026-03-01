@@ -79,74 +79,112 @@
 </div>
 
 <script>
-    let notes = JSON.parse(localStorage.getItem("notes")) || [];
-    let currentNoteIndex = null;
+let folders = JSON.parse(localStorage.getItem("folders")) || [];
+let currentFolderIndex = null;
+let currentNoteIndex = null;
 
-    const notesList = document.getElementById("notesList");
-    const editor = document.getElementById("editor");
-    const titleInput = document.getElementById("titleInput");
+const foldersList = document.getElementById("foldersList");
+const notesList = document.getElementById("notesList");
+const editor = document.getElementById("editor");
+const titleInput = document.getElementById("titleInput");
 
-    function saveNotes() {
-        localStorage.setItem("notes", JSON.stringify(notes));
-    }
+function saveData() {
+    localStorage.setItem("folders", JSON.stringify(folders));
+}
 
-    function renderNotes() {
-        notesList.innerHTML = "";
-        notes.forEach((note, index) => {
-            const div = document.createElement("div");
-            div.className = "note-item" + (index === currentNoteIndex ? " active" : "");
-            div.textContent = note.title || "Untitled Note";
-            div.onclick = () => selectNote(index);
-            notesList.appendChild(div);
-        });
-    }
-
-    function createNote() {
-        const newNote = {
-            title: "New Note",
-            content: ""
-        };
-        notes.push(newNote);
-        currentNoteIndex = notes.length - 1;
-        saveNotes();
-        renderNotes();
-        titleInput.value = newNote.title;
-        editor.value = "";
-    }
-
-    function selectNote(index) {
-        currentNoteIndex = index;
-        titleInput.value = notes[index].title;
-        editor.value = notes[index].content;
-        renderNotes();
-    }
-
-    function deleteNote() {
-        if (currentNoteIndex === null) return;
-        notes.splice(currentNoteIndex, 1);
-        currentNoteIndex = null;
-        titleInput.value = "";
-        editor.value = "";
-        saveNotes();
-        renderNotes();
-    }
-
-    titleInput.addEventListener("input", () => {
-        if (currentNoteIndex !== null) {
-            notes[currentNoteIndex].title = titleInput.value;
-            saveNotes();
-            renderNotes();
-        }
+// ===== Folder Functions =====
+function renderFolders() {
+    foldersList.innerHTML = "";
+    folders.forEach((folder, index) => {
+        const div = document.createElement("div");
+        div.className = "note-item" + (index === currentFolderIndex ? " active" : "");
+        div.textContent = folder.name || "Untitled Folder";
+        div.onclick = () => selectFolder(index);
+        foldersList.appendChild(div);
     });
+}
 
-    editor.addEventListener("input", () => {
-        if (currentNoteIndex !== null) {
-            notes[currentNoteIndex].content = editor.value;
-            saveNotes();
-        }
-    });
-
+function createFolder() {
+    const name = prompt("Folder name:");
+    if (!name) return;
+    folders.push({ name, notes: [] });
+    currentFolderIndex = folders.length - 1;
+    currentNoteIndex = null;
+    saveData();
+    renderFolders();
     renderNotes();
+}
+
+function selectFolder(index) {
+    currentFolderIndex = index;
+    currentNoteIndex = null;
+    renderFolders();
+    renderNotes();
+}
+
+// ===== Note Functions =====
+function renderNotes() {
+    notesList.innerHTML = "";
+    if (currentFolderIndex === null) return;
+    folders[currentFolderIndex].notes.forEach((note, index) => {
+        const div = document.createElement("div");
+        div.className = "note-item" + (index === currentNoteIndex ? " active" : "");
+        div.textContent = note.title || "Untitled Note";
+        div.onclick = () => selectNote(index);
+        notesList.appendChild(div);
+    });
+}
+
+function createNote() {
+    if (currentFolderIndex === null) {
+        alert("Select a folder first!");
+        return;
+    }
+    const newNote = { title: "New Note", content: "" };
+    folders[currentFolderIndex].notes.push(newNote);
+    currentNoteIndex = folders[currentFolderIndex].notes.length - 1;
+    saveData();
+    renderNotes();
+    titleInput.value = newNote.title;
+    editor.value = "";
+}
+
+function selectNote(index) {
+    if (currentFolderIndex === null) return;
+    currentNoteIndex = index;
+    const note = folders[currentFolderIndex].notes[index];
+    titleInput.value = note.title;
+    editor.value = note.content;
+    renderNotes();
+}
+
+function deleteNote() {
+    if (currentFolderIndex === null || currentNoteIndex === null) return;
+    folders[currentFolderIndex].notes.splice(currentNoteIndex, 1);
+    currentNoteIndex = null;
+    titleInput.value = "";
+    editor.value = "";
+    saveData();
+    renderNotes();
+}
+
+// ===== Input Event Listeners =====
+titleInput.addEventListener("input", () => {
+    if (currentFolderIndex === null || currentNoteIndex === null) return;
+    folders[currentFolderIndex].notes[currentNoteIndex].title = titleInput.value;
+    saveData();
+    renderNotes();
+});
+
+editor.addEventListener("input", () => {
+    if (currentFolderIndex === null || currentNoteIndex === null) return;
+    folders[currentFolderIndex].notes[currentNoteIndex].content = editor.value;
+    saveData();
+});
+
+// ===== Initial Render =====
+renderFolders();
+renderNotes();
 </script>
 </body>
 </html>
