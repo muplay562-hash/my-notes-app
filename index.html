@@ -117,8 +117,10 @@ const notesList = document.getElementById("notesList");
 const editor = document.getElementById("editor");
 const titleInput = document.getElementById("titleInput");
 
-function saveData() {
-    localStorage.setItem("folders", JSON.stringify(folders));
+async function saveData() {
+    await db.collection("notesApp").doc("mainData").set({
+        folders: folders
+    });
 }
 
 // (Keep the rest of your existing functions exactly as they are below this line)
