@@ -173,7 +173,6 @@ function moveNote() {
         return;
     }
 
-    // Show folder options
     let folderNames = folders
         .map((folder, index) => `${index}: ${folder.name}`)
         .join("\n");
@@ -195,10 +194,8 @@ function moveNote() {
         return;
     }
 
-    // Remove note from current folder
     const noteToMove = folders[currentFolderIndex].notes.splice(currentNoteIndex, 1)[0];
 
-    // Add to new folder
     folders[targetIndex].notes.push(noteToMove);
 
     currentNoteIndex = null;
