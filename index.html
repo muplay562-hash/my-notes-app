@@ -1,103 +1,138 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Web Notepad</title>
+    <title>Multi-Note App</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             display: flex;
-            justify-content: center;
-            padding-top: 50px;
+            margin: 0;
+            height: 100vh;
         }
 
-        .container {
-            background: white;
-            width: 600px;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        .sidebar {
+            width: 250px;
+            background: #f4f4f4;
+            padding: 10px;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
         }
 
-        h1 {
+        .sidebar h2 {
             text-align: center;
         }
 
+        .note-item {
+            padding: 8px;
+            background: white;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .note-item:hover {
+            background: #ddd;
+        }
+
+        .active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
         textarea {
-            width: 100%;
-            height: 300px;
+            flex: 1;
+            resize: none;
             padding: 10px;
             font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: none;
         }
 
         button {
             margin-top: 10px;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
+            padding: 8px;
             cursor: pointer;
-        }
-
-        .save {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .clear {
-            background-color: #f44336;
-            color: white;
-            margin-left: 10px;
-        }
-
-        .status {
-            margin-top: 10px;
-            font-size: 14px;
-            color: gray;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>My Simple Notepad</h1>
-    <textarea id="note" placeholder="Start typing your notes here..."></textarea>
-    <br>
-    <button class="save" onclick="saveNote()">Save</button>
-    <button class="clear" onclick="clearNote()">Clear</button>
-    <div class="status" id="status"></div>
+<div class="sidebar">
+    <h2>Notes</h2>
+    <button onclick="createNote()">+ New Note</button>
+    <div id="notesList"></div>
+</div>
+
+<div class="main">
+    <textarea id="editor" placeholder="Select or create a note..."></textarea>
+    <button onclick="deleteNote()">Delete Note</button>
 </div>
 
 <script>
-    const textarea = document.getElementById("note");
-    const status = document.getElementById("status");
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    let currentNoteIndex = null;
 
-    // Load saved note when page opens
-    window.onload = function() {
-        const savedNote = localStorage.getItem("myNote");
-        if (savedNote) {
-            textarea.value = savedNote;
-        }
-    };
+    const notesList = document.getElementById("notesList");
+    const editor = document.getElementById("editor");
 
-    function saveNote() {
-        localStorage.setItem("myNote", textarea.value);
-        status.textContent = "Note saved successfully!";
-        setTimeout(() => status.textContent = "", 2000);
+    function saveNotes() {
+        localStorage.setItem("notes", JSON.stringify(notes));
     }
 
-    function clearNote() {
-        if (confirm("Are you sure you want to clear the note?")) {
-            textarea.value = "";
-            localStorage.removeItem("myNote");
-            status.textContent = "Note cleared.";
-            setTimeout(() => status.textContent = "", 2000);
-        }
+    function renderNotes() {
+        notesList.innerHTML = "";
+        notes.forEach((note, index) => {
+            const div = document.createElement("div");
+            div.className = "note-item" + (index === currentNoteIndex ? " active" : "");
+            div.textContent = note.title || "Untitled Note";
+            div.onclick = () => selectNote(index);
+            notesList.appendChild(div);
+        });
     }
+
+    function createNote() {
+        const newNote = {
+            title: "New Note",
+            content: ""
+        };
+        notes.push(newNote);
+        currentNoteIndex = notes.length - 1;
+        saveNotes();
+        renderNotes();
+        editor.value = "";
+    }
+
+    function selectNote(index) {
+        currentNoteIndex = index;
+        editor.value = notes[index].content;
+        renderNotes();
+    }
+
+    function deleteNote() {
+        if (currentNoteIndex === null) return;
+        notes.splice(currentNoteIndex, 1);
+        currentNoteIndex = null;
+        editor.value = "";
+        saveNotes();
+        renderNotes();
+    }
+
+    editor.addEventListener("input", () => {
+        if (currentNoteIndex !== null) {
+            notes[currentNoteIndex].content = editor.value;
+            notes[currentNoteIndex].title = editor.value.split("\n")[0] || "Untitled Note";
+            saveNotes();
+            renderNotes();
+        }
+    });
+
+    renderNotes();
 </script>
-.
+
 </body>
 </html>
